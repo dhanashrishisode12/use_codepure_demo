@@ -1,11 +1,38 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+import 'drawers.dart';
 
 void main() {
   runApp(const MaterialApp(title: "home", home: HomePage()));
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final TextEditingController _nameController = TextEditingController();
+  var myText = "change me";
+  var url = "https://jsonplaceholder.typicode.com/photos";
+  var data;
+  @override
+  void initState() {
+    super.initState();
+    getdata();
+  }
+
+  getdata() async {
+    var res = await http.get(Uri.parse(url));
+    // print(res.body);
+    data = jsonDecode(res.body);
+    setState(() {});
+    print(data);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,18 +40,59 @@ class HomePage extends StatelessWidget {
         appBar: AppBar(
           title: const Text("home"),
         ),
-        body: Center(
-          child: Container(
-            padding: EdgeInsets.all(8),
-            alignment: Alignment.center,
-            height: 100,
-            width: 100,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [BoxShadow(color: Colors.black, blurRadius: 8)],
-                gradient: LinearGradient(colors: [Colors.yellow, Colors.pink])),
-            child: const Text(" i am a box"),
-          ),
-        ));
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: data != null
+              ? ListView.builder(
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: ListTile(
+                        title: Text(data[index]["title"]),
+                        subtitle: Text("ID:${data[index]["id"]}"),
+                        leading: Image.network(data[index]["url"]),
+                      ),
+                    );
+                  },
+                  itemCount: data.length)
+              : const Center(
+                  child: CircularProgressIndicator(),
+                ),
+
+          // child: Column(
+          //   children: const <Widget>[
+          // const BgImage(),
+          // const SizedBox(
+          //   height: 20,
+          // ),
+          // Text(
+          //   myText,
+          //   style: const TextStyle(
+          //       fontSize: 20, fontWeight: FontWeight.bold),
+          // ),
+          // const SizedBox(
+          //   height: 20,
+          // ),
+          // Padding(
+          //   padding: const EdgeInsets.all(16.0),
+          //   child: TextField(
+          //     controller: _nameController,
+          //     keyboardType: TextInputType.name,
+          //     decoration: const InputDecoration(
+          //         border: OutlineInputBorder(),
+          //         labelText: "Name",
+          //         hintText: " enter the name"),
+          //   ),
+          // ),
+          // ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            myText = _nameController.text;
+            setState(() {});
+          },
+          child: const Icon(Icons.refresh),
+        ),
+        drawer: const MyDrawer());
   }
 }
