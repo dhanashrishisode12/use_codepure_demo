@@ -1,98 +1,29 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:use_codepure_demo/pages/home_page.dart';
+import 'package:use_codepure_demo/pages/home_page_fb.dart';
+import 'package:use_codepure_demo/utils/Constants.dart';
 
-import 'drawers.dart';
+import 'pages/login.dart';
 
-void main() {
-  runApp(const MaterialApp(title: "home", home: HomePage()));
-}
+Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  final TextEditingController _nameController = TextEditingController();
-  var myText = "change me";
-  var url = "https://jsonplaceholder.typicode.com/photos";
-  var data;
-  @override
-  void initState() {
-    super.initState();
-    getdata();
-  }
-
-  getdata() async {
-    var res = await http.get(Uri.parse(url));
-    // print(res.body);
-    data = jsonDecode(res.body);
-    setState(() {});
-    print(data);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text("home"),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: data != null
-              ? ListView.builder(
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: ListTile(
-                        title: Text(data[index]["title"]),
-                        subtitle: Text("ID:${data[index]["id"]}"),
-                        leading: Image.network(data[index]["url"]),
-                      ),
-                    );
-                  },
-                  itemCount: data.length)
-              : const Center(
-                  child: CircularProgressIndicator(),
-                ),
-
-          // child: Column(
-          //   children: const <Widget>[
-          // const BgImage(),
-          // const SizedBox(
-          //   height: 20,
-          // ),
-          // Text(
-          //   myText,
-          //   style: const TextStyle(
-          //       fontSize: 20, fontWeight: FontWeight.bold),
-          // ),
-          // const SizedBox(
-          //   height: 20,
-          // ),
-          // Padding(
-          //   padding: const EdgeInsets.all(16.0),
-          //   child: TextField(
-          //     controller: _nameController,
-          //     keyboardType: TextInputType.name,
-          //     decoration: const InputDecoration(
-          //         border: OutlineInputBorder(),
-          //         labelText: "Name",
-          //         hintText: " enter the name"),
-          //   ),
-          // ),
-          // ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            myText = _nameController.text;
-            setState(() {});
-          },
-          child: const Icon(Icons.refresh),
-        ),
-        drawer: const MyDrawer());
-  }
+  Constants.prefs = await SharedPreferences.getInstance();
+  runApp(
+    MaterialApp(
+      title: "home",
+      debugShowCheckedModeBanner: false,
+      home: Constants.prefs?.getBool("loggedIn") == true
+          ? HomePageFB()
+          : const LoginPage(),
+      theme: ThemeData(primarySwatch: Colors.deepPurple),
+      // initialRoute: "/login",
+      routes: {
+        "/login": (context) => const LoginPage(),
+        "/homepage": (context) => const HomePage(),
+        "/homepagefb": ((context) => HomePageFB()),
+      },
+    ),
+  );
 }
