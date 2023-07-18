@@ -63,7 +63,8 @@ class _LoginPageState extends State<LoginPage> {
                             //     MaterialPageRoute(
                             //         builder: (context) => HomePage()));
                             Constants.prefs?.setBool("loggedIn", true);
-                            Navigator.pushReplacementNamed(context, "/home");
+                            Navigator.pushReplacementNamed(
+                                context, "/homepage");
                           },
                           child: const Text("Sign In"),
                         ),

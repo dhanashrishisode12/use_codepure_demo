@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import '../utils/Constants.dart';
 import 'drawers.dart';
 
+// ignore: must_be_immutable
 class HomePageFB extends StatelessWidget {
   var url = "https://jsonplaceholder.typicode.com/photos";
   var data;
@@ -40,13 +41,12 @@ class HomePageFB extends StatelessWidget {
                   return const Center(
                     child: Text("fetch something"),
                   );
-                  break;
                 case ConnectionState.active:
                 case ConnectionState.waiting:
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
-                  break;
+                  
                 case ConnectionState.done:
                   if (snapshot.hasError) {
                     return const Center(

@@ -12,10 +12,10 @@ Future main() async {
   Constants.prefs = await SharedPreferences.getInstance();
   runApp(
     MaterialApp(
-      title: "home",
+      title: "Catlog App",
       debugShowCheckedModeBanner: false,
       home: Constants.prefs?.getBool("loggedIn") == true
-          ? HomePageFB()
+          ? const HomePage()
           : const LoginPage(),
       theme: ThemeData(primarySwatch: Colors.deepPurple),
       // initialRoute: "/login",
